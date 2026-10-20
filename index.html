@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SMOOTH/STUCK</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Montserrat:wght@400;500&display=swap">
+<style>
+html{scroll-behavior:smooth}
+body{margin:0;background:#0b0b0b;color:#f3efe4;font:400 17px/1.75 Montserrat,Arial,sans-serif}
+h1,h2,h3,.vt,.k,.logo,#mast nav a,figcaption,small,.w,.btn,label,.kk{font-family:"Chakra Petch",Impact,sans-serif;text-transform:uppercase}
+section,.row{scroll-margin-top:64px}
+#mast{position:fixed;top:0;left:0;right:0;height:64px;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 4vw;background:#0b0b0b;border-bottom:1px solid #f3efe433}
+.logo{font-weight:700;font-size:20px;letter-spacing:.08em;color:#f3efe4;text-decoration:none}
+#mast nav a{margin-left:34px;font-weight:700;font-size:13px;letter-spacing:.16em;color:#f3efe4;text-decoration:none;opacity:.55;padding:8px 0;border-bottom:2px solid transparent;transition:opacity .3s,border-color .3s}
+#mast nav a:hover,#mast nav a.on{opacity:1;border-bottom-color:#f3efe4}
+.vol{font:700 12px "Chakra Petch",Impact,sans-serif;letter-spacing:.16em;opacity:.6;text-transform:uppercase}
+#sp{position:fixed;left:calc(50% - 48px);top:64px;width:96px;height:calc(100vh - 64px);z-index:40;touch-action:none}
+.row{display:grid;grid-template-columns:1fr 96px 1fr}
+.g{background:#6b6963}
+.L{background:#0b0b0b;color:#f3efe4}
+.R{background:#a29f9a;color:#1a1a1a}
+.open .c{height:100vh;min-height:640px;overflow:hidden;box-sizing:border-box;padding:calc(64px + 4vh) 3vw 5vh;display:flex;flex-direction:column;justify-content:space-between}
+.kk{font-weight:700;font-size:13px;letter-spacing:.2em;opacity:.7}
+.big{font:700 min(11vw,11.5vh)/.9 "Chakra Petch",Impact,sans-serif;text-transform:uppercase;writing-mode:vertical-rl;transform:rotate(180deg);align-self:flex-start;margin:4vh 0}
+.R .big{color:#fff}
+.deck{margin:0;max-width:20em;font:500 clamp(22px,2.3vw,34px)/1.2 Montserrat,Arial,sans-serif}
+.sub{margin:2vh 0 0;max-width:30em;opacity:.8;font-size:15px}
+.cell{display:grid;grid-template-columns:clamp(64px,7vw,110px) 1fr;column-gap:2vw;padding:12vh 3vw 8vh}
+.vt{margin:0;font-size:clamp(54px,6.4vw,104px);font-weight:700;line-height:.95;writing-mode:vertical-rl;transform:rotate(180deg);align-self:start;justify-self:start}
+.R .vt{color:#fff}
+.tx{text-align:justify;hyphens:auto;font-size:clamp(14px,1.08vw,17px)}
+.tx p{margin:0 0 1.1em}
+.pq{margin:3vh 0 0;font:500 clamp(24px,2.5vw,38px)/1.12 Montserrat,Arial,sans-serif}
+figure{margin:6vh 0 0}
+figure img{display:block;width:100%;height:50vh;object-fit:cover}
+figcaption{margin-top:8px;font-size:11px;letter-spacing:.16em;opacity:.65}
+.lw{position:relative;cursor:crosshair}
+.lc{position:absolute;width:130px;height:130px;border-radius:50%;border:2px solid #fff;box-shadow:0 4px 18px #0008;display:none;pointer-events:none;background-repeat:no-repeat}
+.rv{opacity:0;transform:translateY(34px);transition:opacity 1.3s cubic-bezier(.2,.7,.2,1),transform 1.3s cubic-bezier(.2,.7,.2,1)}
+.R .rv{transition:opacity .8s steps(4),transform .8s steps(5)}
+.rv.in{opacity:1;transform:none}
+.vt.rv{transform:rotate(180deg) translateY(34px)}
+.vt.rv.in{transform:rotate(180deg)}
+#mech{position:relative;z-index:45;display:grid;grid-template-columns:25% 1fr 25%;height:100vh;min-height:640px;background:linear-gradient(90deg,#0b0b0b 50%,#a29f9a 50%)}
+.mp{padding:calc(64px + 6vh) 2.4vw 6vh;display:flex;flex-direction:column;gap:3vh;box-sizing:border-box}
+.mp.l{background:#0b0b0b;color:#f3efe4}
+.mp.r{background:#a29f9a;color:#1a1a1a}
+.mp h2{margin:0;font-size:clamp(34px,3.6vw,60px);line-height:.95}
+.mp.r h2{color:#fff}
+.mp p{margin:0;font-size:14px;line-height:1.6;opacity:.85}
+.btn{align-self:flex-start;background:none;border:2px solid currentColor;color:inherit;padding:10px 18px;font-weight:700;font-size:13px;letter-spacing:.16em;cursor:pointer;transition:background .3s,color .3s}
+.mp.l .btn:hover{background:#f3efe4;color:#0b0b0b}
+.mp.r .btn:hover{background:#1a1a1a;color:#a29f9a}
+.ws{display:flex;flex-direction:column;gap:6px;margin-top:auto}
+.w{font-weight:700;font-size:clamp(20px,2vw,32px);line-height:1.1;opacity:.28;transition:opacity .25s}
+.w.on{opacity:1}
+.mm{display:flex;flex-direction:column;padding:calc(64px + 3vh) 0 3vh;box-sizing:border-box;background:#e4dfd0;color:#1a1a1a}
+#cap{min-height:3.6em;padding:0 2vw;text-align:center;font:500 clamp(16px,1.5vw,22px)/1.3 Montserrat,Arial,sans-serif;display:flex;align-items:center;justify-content:center}
+.mw{flex:1;position:relative;min-height:0}
+#mc{position:absolute;left:0;top:0;width:100%;height:100%;display:block;touch-action:none}
+.ctl{display:flex;gap:2vw;justify-content:center;align-items:center;padding:2vh 2vw 0;font-size:11px;letter-spacing:.14em;flex-wrap:wrap}
+.ctl label{display:flex;flex-direction:column;gap:6px;color:#1a1a1a;font-weight:700}
+.ctl b{opacity:.6}
+.ctl input[type=range]{width:150px;accent-color:#1a1a1a}
+.ctl input[type=checkbox]{accent-color:#1a1a1a;width:18px;height:18px}
+.zc{position:relative;height:330px;margin:0 3vw 3vh;overflow:hidden;background:#141414;color:#f3efe4}
+.zc.st{background:#8f8c87;color:#1a1a1a}
+.sc{padding:12vh 0 8vh}
+.ls h2{font-size:clamp(34px,3.6vw,58px)}
+.ls .tx{max-width:34em}
+.zb{position:absolute;left:0;top:0;right:0;bottom:0;padding:26px 28px 96px;font-size:15px;line-height:1.65;overflow:hidden}
+.zb p{margin:0 0 .8em}
+.zb .rv,.zb .rv.in{opacity:1;transform:none}
+.pn{position:absolute;top:0;bottom:0;width:50%;background:var(--im) no-repeat;background-size:200% 100%;z-index:2;clip-path:inset(0 0 0 0);transition:clip-path 1.1s cubic-bezier(.3,.7,.2,1)}
+.pn.l{left:0;background-position:0 0}
+.pn.r{right:0;background-position:100% 0}
+.pn.l::after{content:"";position:absolute;right:0;top:0;bottom:0;width:40px;background:url(assets/strip.jpg) 0 0 repeat-y}
+.pn.r::before{content:"";position:absolute;left:0;top:0;bottom:0;width:42px;background:url(assets/strip.jpg) -40px 0 repeat-y}
+.zs{position:absolute;left:calc(50% - 28px);top:-14px;width:56px;height:119px;z-index:4;background:url(assets/slider.png) center/contain no-repeat;transition:top 1.1s cubic-bezier(.3,.7,.2,1);pointer-events:none}
+.zc.sm:hover .pn{clip-path:inset(100% 0 0 0)}
+.zc.sm:hover .zs{top:316px}
+.zc.st:hover .pn{animation:stkC 2.8s ease-out forwards}
+.zc.st:hover .zs{animation:stkS 2.8s ease-out forwards}
+@keyframes stkC{0%{clip-path:inset(0 0 0 0)}20%{clip-path:inset(30% 0 0 0)}34%{clip-path:inset(30% 0 0 0)}40%{clip-path:inset(26% 0 0 0)}58%{clip-path:inset(26% 0 0 0)}72%{clip-path:inset(60% 0 0 0)}80%{clip-path:inset(60% 0 0 0)}100%{clip-path:inset(100% 0 0 0)}}
+@keyframes stkS{0%{top:-14px}20%{top:85px}34%{top:85px}40%{top:72px}58%{top:72px}72%{top:184px}80%{top:184px}100%{top:316px}}
+.zt{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:40px 28px 20px;background:linear-gradient(transparent,#000c);color:#f3efe4}
+.zt small{font-size:11px;letter-spacing:.18em;opacity:.75}
+.zt h3{margin:4px 0 0;font-size:clamp(24px,2.4vw,38px);line-height:1}
+.col{padding:14vh 3vw 8vh}
+.col h2{margin:0 0 4vh;font-size:clamp(44px,5.4vw,90px);line-height:.95}
+.R .col h2{color:#fff}
+.col h3{margin:3vh 0 4px;font-size:13px;letter-spacing:.16em}
+.col p{margin:0 0 1em;max-width:32em}
+footer{display:flex;justify-content:space-between;padding:2vh 4vw 4vh;background:#a29f9a;color:#1a1a1a;font:700 12px "Chakra Petch",Impact,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+body.held #read .R .cell{animation:shk .12s linear infinite}
+@keyframes shk{0%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}100%{transform:translateX(0)}}
+@media(max-width:1000px){.vol{display:none}#mast nav a{margin-left:16px}.row{grid-template-columns:1fr 60px 1fr}#sp{display:none}#mech{grid-template-columns:1fr;background:#0b0b0b}.cell{grid-template-columns:1fr}.vt{writing-mode:horizontal-tb;transform:none!important;font-size:56px}}
+</style>
+</head>
+<body>
+<header id="mast"><a class="logo" href="#top">Smooth/Stuck</a><nav><a href="#top" data-s="top">Open</a><a href="#read" data-s="read">Read</a><a href="#mech" data-s="mech">Mechanism</a><a href="#stories" data-s="stories">Stories</a><a href="#colophon" data-s="colophon">Colophon</a></nav><span class="vol">Vol. 1 &middot; 2026</span></header>
+<canvas id="sp"></canvas>
+<section id="top"><div class="row open"><div class="c L"><div class="kk">Part One</div><div class="big">Smooth</div><div><p class="deck">The gesture you never notice.</p><p class="sub">An action usually finished before we think to describe it. Reading unzips the book. Pull the tab down the middle, or just scroll.</p></div></div><div class="g"></div><div class="c R"><div class="kk">Part Two</div><div class="big">Stuck</div><div><p class="deck">The gesture you cannot ignore.</p><p class="sub">The shift from an automatic gesture to deliberate attention.</p></div></div></div></section>
+<section id="read"><div class="row" id="r1"><div class="c L"><div class="cell"><h2 class="vt rv">Grip</h2><div class="cc"><div class="tx rv"><p>You reach for a zipper because something else needs to happen. A bag needs closing before you leave. A case needs opening so you can take something out. The fastening occupies a small interval between the present moment and the next task. When it works, that interval barely registers. Your attention moves ahead while your hand completes an action it already knows.</p><p>This book stays inside that interval. It follows the approach of the fingers, the establishment of a grip, the movement of the slider, and the moment the hand lets go. None of these actions is remarkable on its own. Together, however, they make an ordinary mechanism feel easy to use. Smoothness is experienced through their continuity: each small action gives way to the next without asking for an unexpected decision.</p><p>Consider how little you might remember immediately afterwards. You know the bag is ready. You may not remember the angle of your wrist or whether you watched the slider move. The action has succeeded without leaving much of a story.</p><p>Looking closely gives that movement a duration of its own. The familiar gesture becomes a sequence of contacts and adjustments. There is a beginning before the pull, a changing sensation during it, and an ending the fingers recognise. This is where SMOOTH begins: with an action usually finished before we think to describe it.</p><p>The fingers do not always meet the pull in exactly the same way. Sometimes it is already facing outward, easy to catch between finger and thumb. Sometimes it lies flat against the slider, and a fingertip lifts its edge first. A small preliminary movement makes the larger movement possible.</p><p>The shape of the tab gives the fingers something to work with. Its edge, opening, thickness, and surface offer different ways to establish contact. A broad tab may invite a pinch. A loop may allow a finger to hook through it. A familiar grip is often found through touch as much as sight. The fingers make a brief search, recognise a usable edge, and settle.</p><p>The thumb supplies an opposing pressure. A grip is made through the relationship between two points of contact. The fingers do not have to cover much of the tab. They need enough purchase to direct it.</p><p>The wrist sets an angle. It carries the grip into a direction suited to the route. As the movement continues, that angle may change. The hand can follow a curve without the person naming the adjustment.</p><p>The hand also approaches with a direction already in mind. Finding the tab and preparing to move it can become one continuous gesture. The fingers close as the wrist turns into position. For a moment, the hand and the small part it holds establish the terms of the action: where movement will begin, which way it will travel, and how the body will follow.</p><p>The hand holding the pull receives most of the attention because it travels. Yet another part of the body may be doing quieter work. The other hand holds the bag, steadies the case, or keeps an edge from following the slider. A moving hand depends on something that remains sufficiently still.</p><p>Without that support, the first pull might simply shift the whole object. The gesture then contains a small correction: settle it, hold it, try the movement again. When support is established immediately, the correction disappears from notice.</p><p>Watching both hands makes the action less simple and more interesting. One hand directs a small mechanism while the other manages the conditions around it. Their coordination can be quiet enough to escape description.</p><p>An ordinary zipper rarely arrives with instructions for the fingers. The object offers a small movable part, and the user brings experience from other objects. A person encountering an unfamiliar bag may already know roughly where to look, how to grip the pull, and what kind of movement to attempt. The gesture can be familiar before the object itself becomes familiar.</p><p>This knowledge is flexible. A closure may run horizontally, vertically, or around a corner. The hand changes its angle to suit the route. Familiarity supplies a starting point; the present object supplies the details.</p><p>Repeated use develops more specific expectations. You learn where this particular pull tends to rest and whether the object needs steadying. You learn how far the slider travels before reaching the end. Handling becomes quicker because fewer parts of the task arrive as surprises.</p><p>Smoothness is therefore partly a quality of the encounter. An object that feels straightforward to one person may require more attention from another. Grip, reach, vision, and dexterity differ, as do circumstances.</p></div><p class="pq rv">This is where SMOOTH begins: with an action usually finished before we think to describe it.</p><figure class="rv"><img src="assets/sm_leather.jpg"><figcaption>Fig. 1</figcaption></figure></div></div></div><div class="g"></div><div class="c R"><div class="cell"><h2 class="vt rv">Catch</h2><div class="cc"><div class="tx rv"><p>The hand begins with an expectation. The fingers find the tab, the wrist prepares to move, and the person assumes that the slider will follow. Then the movement stops sooner than intended. For a brief moment, the body is still carrying out an action that the object has ceased to support. The difference is felt before it is fully understood.</p><p>A zipper that catches interrupts more than its own travel. It interrupts the task around it. A person preparing to leave is suddenly occupied with a small fastening. Someone reaching for an item has to delay access to it. The mechanism moves from the edge of attention to its centre because the expected result has failed to arrive.</p><p>The first sensation does not identify the cause. Something has resisted, but the reason may remain unclear. The person knows the movement is wrong before knowing what is wrong with the object. A familiar gesture has produced unfamiliar information, and the hand has to decide what to do next.</p><p>The first response can be repetition. The person pulls again, perhaps slightly harder or from a different angle, without stopping to inspect the zipper. If the slider remains still, the repeated attempt changes the meaning of the pause. The task has acquired a question: why is this ordinary movement not happening?</p><p>This book follows that change in attention. It begins at the catch, stays with the pause, and observes the attempts that follow.</p><p>This response belongs to the strength of the original expectation. The hand already knows what it wants to do, while the interruption has not yet supplied an alternative. Continuing the same action requires less immediate thought than inventing a new one.</p><p>Repeating an action can produce information, but effort alone does not explain resistance. A stronger pull may shift the surrounding material while leaving the slider where it was. This is the uncomfortable point at which doing more of the same begins to feel less useful, and the hand has to consider stopping long enough to look.</p><p>The eyes turn toward the place the hand has already identified. A small area of the object becomes the subject of an inspection. The person may lift it closer, rotate it toward the light, or move a finger out of the way. The gesture has changed from operating the zipper to making the zipper visible.</p><p>Looking introduces a different pace. Movement pauses so that relationships can be examined: where the slider sits, how the surrounding material falls, whether something lies in its path. A familiar object becomes temporarily unfamiliar through the amount of detail it now presents.</p><p>The close view does not always produce an immediate answer. A tight crop can reveal one part while hiding the wider arrangement. Inspection becomes a sequence of changing viewpoints, each an attempt to make the resistance understandable.</p><p>Attention has travelled in the opposite order from a careful demonstration. The action began first; explanation became necessary afterwards. The person has to exchange the confidence of recognition for the slower work of noticing what is actually there.</p><p>A catch feels different when there is time to spare. At a table, an interrupted zipper may be a minor problem. At a doorway, while another person waits, the same resistance can feel disproportionately urgent. The mechanism occupies a small space, but the delay belongs to the larger situation around it.</p><p>Hurry changes the meaning of a few seconds. An action expected to be nearly immediate becomes an obstacle between one task and another. Attention is pulled toward the next thing even as the hand is required to stay with the present one.</p><p>That division can make inspection feel like another inconvenience. Stopping to look appears to delay progress, although repeated pulling may not be producing progress either.</p><p>The zipper has not become more complicated simply because someone is late. The conditions of the encounter have changed. Time, light, available space, and the ability to use both hands all influence how manageable the interruption feels.</p></div><p class="pq rv">Catch names the first interruption.</p><figure class="rv lw"><img src="assets/st_red.jpg"><figcaption>Fig. 4</figcaption></figure></div></div></div></div>
+<div class="row" id="r2"><div class="c L"><div class="cell"><h2 class="vt rv">Pull</h2><div class="cc"><div class="tx rv"><p>The first movement tests the expectation established by the grip. The hand begins to travel, and the slider follows. A small amount of resistance is enough to confirm that something is being moved. Too little sensation would make the action difficult to read.</p><p>At the beginning, the hand may pull slowly and then settle into a steadier pace. The wrist finds an angle, the object responds, and the gesture becomes more confident. This adjustment need not appear as a separate stage. It can happen inside the first few centimetres, before the person has any reason to notice the action closely.</p><p>A zipper gives the hand a route to follow. The slider travels along the line of the closure rather than wandering across the surface of the object. The route is built into the object before the gesture begins.</p><p>There is satisfaction in a beginning that behaves as expected. The hand receives an immediate answer to its movement, and the next part follows naturally. Smoothness establishes that confidence early, allowing attention to loosen its grip before the fingers loosen theirs.</p><p>The slider gives the gesture a visible location. We can see where the movement is happening even when the changes around it are small. Direction, pressure, and speed are continually related, even in a movement that feels almost automatic.</p><p>The shape of that route changes the experience. A straight section may allow a fairly continuous movement of the arm. A curve can invite a rotation of the wrist or a change in how the object is held.</p><p>Pulling around the edge of a case can feel different from pulling across a small pouch, even if both movements use the same basic mechanism. Distance and direction become bodily information.</p><p>A photograph can show the route before or after the movement, but the experience unfolds along it. To follow the gesture closely is to imagine those successive positions and the modest changes between them: wrist turning, arm extending, supporting hand shifting, and the slider continuing through a path already waiting for it.</p><p>The sound of a zipper gives movement another form. A brief run of small noises can accompany the slider as it travels, gathering into something heard as a single event. In a quiet room, it may be unusually noticeable. Among other sounds, it may barely register.</p><p>Different objects produce different listening experiences. Material, construction, speed, and the surrounding surface can all affect what reaches the ear. What matters here is the relationship between the noise and the hand’s progress: the sound continues while the movement continues, and falls away when it ends.</p><p>That relationship can make the action feel readable even when the eyes are occupied elsewhere. The ear receives evidence that something is happening.</p><p>Trying to write the sound exposes the difficulty of translating an ordinary sensation. A repeated letter suggests duration but misses texture. A word such as rasp or buzz offers an approximation rather than a recording.</p><p>A familiar movement has an expected duration, even when no one is counting. We anticipate that the zipper will take a brief interval to reach the end. The hand moves within that expectation. Completion feels near enough that we may already be shifting our weight, looking away, or preparing to pick up the object.</p><p>The pace is not necessarily constant. A person may begin cautiously, move more quickly through an easy section, and slow near the end. These changes can still feel smooth because they belong to the intended action.</p><p>Hurry can compress the interval without improving it. A faster pull may feel appropriate when the object moves easily, but speed alone does not define success. Smoothness concerns the fit between intention and response, including the ability to choose a pace that the object accommodates.</p><p>Describing the gesture makes the short interval seem longer than it felt. A few seconds can hold a sequence of decisions, sensations, and small changes in position.</p></div><p class="pq rv">Smooth does not have to mean frictionless.</p><figure class="rv"><img src="assets/sm_plaid.jpg"><figcaption>Fig. 2</figcaption></figure></div></div></div><div class="g"></div><div class="c R"><div class="cell"><h2 class="vt rv">Inspect</h2><div class="cc"><div class="tx rv"><p>The eyes turn toward the place the hand has already identified. A small area of the object becomes the subject of an inspection. The person may lift it closer, rotate it toward the light, or move a finger out of the way. The gesture has changed from operating the zipper to making the zipper visible.</p><p>Looking introduces a different pace. Movement pauses so that relationships can be examined: where the slider sits, how the surrounding material falls, whether something lies in its path. A familiar object becomes temporarily unfamiliar through the amount of detail it now presents.</p><p>It can be tempting to give the first visible irregularity a complete explanation. Yet noticing something unusual and establishing its role are different tasks. The photograph gives a place to look. The description supplies the sequence that made that place significant.</p><p>The inspection remains a process of asking better questions of the object, rather than assigning certainty to the first detail that catches the eye.</p><p>Once the person starts looking closely, the problem becomes located. Earlier, the zipper simply would not move. Now there is a place where movement stopped: beside a fold, near a curve, or along an otherwise ordinary section. Location gives the inspection a starting point without necessarily supplying a diagnosis.</p><p>The distinction matters for photographs as well. A close image can show arrangement, texture, and contact, but it cannot automatically tell us how the mechanism behaved. A still zipper is not evidence of a stuck zipper.</p><p>The image and the account therefore do different work. The photograph gives a place to look. The description supplies the sequence that made that place significant.</p><p>The person may begin to compare a working section with the point of resistance. What changes here? Does the object bend differently? Does the supporting hand need to move? Does the slider stop at the same place each time? Questions become more useful when they stay close to what can actually be observed.</p><p>Looking for the end of useful movement can also change the role of effort. The issue becomes where that effort goes, rather than how much more can be applied. A larger gesture is not necessarily a more informative gesture.</p><p>Watching a second attempt can reveal a distinction that the fingers alone may miss. The pull tab moves, the surrounding material shifts, but the slider does not travel as expected.</p><p>This difference makes a familiar fastening seem like several separate tasks. The hand has to hold the pull. The slider has to move along its route. Earlier, these conditions were experienced together as ease. The interruption makes their coordination visible by showing where it has broken down.</p><p>An interruption can reorganise the hands. The grip used for a quick pull may be replaced by a closer pinch. The other hand may leave its original position to support the material near the slider. The object may be set down so that both hands become available. The body rearranges itself around the new task.</p><p>These changes make the gesture visibly more deliberate. A casual movement becomes a series of small operations. One hand holds while the other looks for a workable angle. Familiarity remains useful, but it no longer supplies the entire action.</p><p>The altered grip can also change what the person feels. Contact nearer to the slider may make a small response easier to notice. These are observations about handling rather than universal instructions for repair.</p><p>The important change is in attention. The user is now choosing where to touch and watching what follows next. The movement becomes a question addressed to the object, with enough patience between attempts to register the final answer.</p><p>An attempt does not always continue in the original direction. The person may move the slider back a short distance, when it moves freely enough to allow that, before reconsidering the next step. The gesture briefly gives up visible progress. Its purpose becomes understanding or changing the conditions around the catch.</p><p>This retreat can feel counterintuitive when the task is to finish quickly. Distance already travelled seems like something to preserve. Yet insisting on forward movement can keep the hand repeating an unhelpful action.</p><p>Even a small backward movement changes the rhythm. Pull, stop, return, inspect. The sequence now has more stages than the user originally anticipated. Each stage can supply a little information, although none guarantees that the next attempt will work.</p><p>The value of this moment lies in its modesty. The person does not need to solve the whole problem in one gesture. The action has become provisional.</p></div><p class="pq rv">Look changes the task.</p><figure class="rv lw"><img src="assets/st_brass.jpg"><figcaption>Fig. 5</figcaption></figure></div></div></div></div>
+<div class="row" id="r3"><div class="c L"><div class="cell"><h2 class="vt rv">Close</h2><div class="cc"><div class="tx rv"><p>As the slider approaches its destination, the gesture begins to change. The hand may slow because it recognises the remaining distance. The fingers may adjust their grip to finish the route comfortably. Completion approaches through a set of small movements before the slider finally stops.</p><p>The endpoint gives the action a limit. It tells the user that this particular travel has gone far enough. The hand does not need to keep moving simply because it could apply more effort. Part of using the object is recognising when the desired result has already been reached and allowing the gesture to end there.</p><p>At this moment, movement becomes readiness. The action does not require an announcement. Its endpoint becomes clear through the transition that follows: fingers relaxing, the object being lifted, or attention returning to whatever prompted the gesture in the first place.</p><p>At the end of SMOOTH, the hand has already gone elsewhere. The zipper rests in the state the user wanted, and the next task has begun. Nothing exceptional has happened. That ordinary outcome is precisely what this essay has followed: a short action meeting an expectation, with enough continuity that the person never needed to make it into a problem.</p><p>That recognition can come through several kinds of information. The visible position of the slider may be enough. A change in resistance may confirm it. The person brings these signs together without necessarily separating them into individual observations.</p><p>Finishing a gesture includes deciding that the result is sufficient. A person may glance along the zipper, touch the edge, or move directly to the next task. The amount of checking depends on the object and the situation.</p><p>Checking adds a second rhythm to the action. First the hand changes the object, then the person confirms the change. Sometimes these stages overlap. The eyes follow the slider while it moves, making a separate inspection unnecessary. Sometimes the result is checked only after the fingers have already released the pull.</p><p>This small decision affects how smoothness is remembered. If everything looks and feels right, the check disappears into the completed task. If something seems uncertain, attention returns.</p><p>There is no single correct amount of attention for every zipper. The mechanism supplies a route and a limit, but the user decides whether the object is ready. The end of movement and the end of concern can occur together, or a short distance apart.</p><p>The memory of a smoothly operated zipper is often less distinct than the memory of one that failed. An easy action contributes to a successful day without becoming its subject. It is folded into arriving, packing, leaving, finding, or carrying. The task that mattered receives the story; the fastening that helped it happen receives very little.</p><p>This does not make the action empty. Looking back across the sequence reveals a particular coordination of fingers, hands, material, movement, sound, and expectation. Ease was produced through details that the user had no immediate reason to examine.</p></div><p class="pq rv">A good ending is often recognised by how readily something else can begin.</p><figure class="rv"><img src="assets/sm_denim.jpg"><figcaption>Fig. 3</figcaption></figure></div></div></div><div class="g"></div><div class="c R"><div class="cell"><h2 class="vt rv">Respond</h2><div class="cc"><div class="tx rv"><p>An attempt does not always continue in the original direction. The person may move the slider back a short distance before reconsidering the next step. The gesture briefly gives up visible progress. Its purpose becomes understanding or changing the conditions around the catch.</p><p>Even a small backward movement changes the rhythm. Pull, stop, return, inspect. The sequence now has more stages than the user originally anticipated. The hand is working through possibilities instead of following an uninterrupted route.</p><p>Sometimes the next attempt works. The slider travels beyond the point where it previously stopped, and the hand feels the return of a familiar response. Movement once expected has become movement noticed. Sometimes the zipper remains stuck. A changed grip, a closer look, and another attempt do not produce the intended movement.</p><p>STUCK therefore ends its main essay with two possible outcomes. In one, movement resumes and the original task continues. In the other, the task is postponed or changed. Both reveal the subject of the book: the shift from an automatic gesture to deliberate attention. The zipper has become noticeable because the hand could no longer rely on the response it expected.</p><p>An interrupted zipper can change the sound of the task. A continuous run becomes a short noise followed by silence. Several attempts produce separate bursts instead of one sustained event. The ear hears hesitation through the gaps, even when the cause of the hesitation remains invisible.</p><p>These pauses can make the person more conscious of their own movement. The sound begins when the hand acts and stops before the expected destination. Its brevity draws attention to the missing continuation.</p><p>The surroundings can amplify the experience. In a quiet space, repeated attempts may seem conspicuous. An ordinary fastening acquires a small social presence through the effort required to operate it. The interruption is felt in the hand and heard in the room.</p><p>Sound is still only part of the evidence. Silence does not identify a fault, and a rough noise does not explain its cause. What sound offers is another record of the action’s rhythm.</p><p>There is a moment when the hand stops trying. The object remains where it is, and no new movement is made. This pause can feel unproductive because the visible state has not improved. Yet it changes the task by making room for attention that was difficult to sustain during repeated pulling.</p><p>Waiting allows the person to reconsider what they know. The slider stopped here. That attempt changed the surrounding material. A different grip made little difference. These observations can be gathered into an account, however tentative.</p><p>The pause can also reveal a limit in the situation. Perhaps the light is poor, the object is awkward to hold, or there is no time for further inspection. Setting the object aside, changing the task, or seeking help can become reasonable responses to the circumstances.</p><p>None of these choices provides the satisfaction of an effortless finish. For a moment, the task is no longer measured by how far the slider travels, but by whether the next decision is better informed than the last.</p><p>The first successful distance may be followed cautiously. The user watches for another catch and keeps the supporting hand nearby. Smoothness has returned without yet restoring complete confidence.</p><p>Reaching the end brings relief, but it does not always establish an explanation. The person knows the zipper moved after those changes, yet may not know which change mattered. Success and understanding can arrive separately.</p><p>The restored action also becomes unusually vivid. Its ordinary rhythm is easier to notice because it was briefly unavailable.</p><p>That decision may be practical and immediate. The contents can wait. Another container can be used. Someone with more experience can examine the fastening later. The object remains unfinished as a task without having to occupy every remaining moment of attention.</p><p>Stopping also prevents uncertainty from being disguised as confidence. A user may recognise that further effort could make the situation worse, even without knowing the exact cause.</p></div><p class="pq rv">Pull, stop, return, inspect.</p><figure class="rv lw"><img src="assets/st_yellow.jpg"><figcaption>Fig. 6</figcaption></figure></div></div></div></div>
+</section>
+<section id="mech"><div class="mp l"><div class="kk">Mechanism &middot; Smooth</div><h2>How a zipper works</h2><p>As the slider is moved upward, two rows of teeth merge and interlock. Gideon Sundback&rsquo;s &ldquo;Hookless Fastener No. 2&rdquo; fixed the design in 1914. Take hold of the tab and pull.</p><button class="btn" id="bs">Smooth</button><div class="ws"><div class="w" data-w="grip">Grip</div><div class="w" data-w="pull">Pull</div><div class="w" data-w="close">Close</div></div></div><div class="mm"><div id="cap">Take hold of the tab and pull it up.</div><div class="mw"><canvas id="mc"></canvas></div><div class="ctl"><label>Teeth <b id="tn">20</b><input type="range" id="rp" min="10" max="34" value="20"></label><label>Wear <b id="wn">0</b><input type="range" id="rw" min="0" max="100" value="0"></label></div></div><div class="mp r"><div class="kk">Mechanism &middot; Stuck</div><h2>And why it catches</h2><p>Wear a few teeth out of true and the slider meets them at its throat. The hand pulls harder, or tries again, or stops.</p><button class="btn" id="bt">Stuck</button><div class="ws"><div class="w" data-w="catch">Catch</div><div class="w" data-w="again">Again</div><div class="w" data-w="look">Look</div><div class="w" data-w="adjust">Adjust</div><div class="w" data-w="wait">Wait</div><div class="w" data-w="enough">Enough</div></div></div></section>
+<section id="stories"><div class="row"><div class="c L sc"><article class="zc sm" style="--im:url(assets/t02.jpg)"><div class="zb"><div class="rv"><p>The hand holding the pull receives most of the attention because it travels. Yet another part of the body may be doing quieter work. The other hand holds the bag, steadies the case, or keeps an edge from following the slider. A moving hand depends on something that remains sufficiently still.</p></div></div><div class="pn l"></div><div class="pn r"></div><div class="zs"></div><div class="zt"><small>Story 01 &middot; Smooth &middot; hover to unzip</small><h3>The Other Hand</h3></div></article><article class="zc sm" style="--im:url(assets/t05.jpg)"><div class="zb"><div class="rv"><p>A brief run of small noises can accompany the slider as it travels, gathering into something heard as a single event. In a quiet room, it may be unusually noticeable. Among other sounds, it may barely register. What matters is the relationship between the noise and the hand&rsquo;s progress: the sound continues while the movement continues, and falls away when it ends.</p></div></div><div class="pn l"></div><div class="pn r"></div><div class="zs"></div><div class="zt"><small>Story 02 &middot; Smooth &middot; hover to unzip</small><h3>Sound Along the Line</h3></div></article><article class="zc sm" style="--im:url(assets/t06.jpg)"><div class="zb"><div class="rv"><p>A familiar movement has an expected duration, even when no one is counting. We anticipate that the zipper will take a brief interval to reach the end. The hand moves within that expectation.</p></div></div><div class="pn l"></div><div class="pn r"></div><div class="zs"></div><div class="zt"><small>Story 03 &middot; Smooth &middot; hover to unzip</small><h3>Knowing the Pace</h3></div></article><article class="zc sm" style="--im:url(assets/sm_leather.jpg)"><div class="zb"><div class="rv"><p>During the pull, attention may drift. The movement remains present in the fingers while the eyes attend to another task. A sound may accompany the travel. The object may shift slightly under the supporting hand. Each adjustment is small enough to belong to the action rather than interrupt it.</p></div></div><div class="pn l"></div><div class="pn r"></div><div class="zs"></div><div class="zt"><small>Story 04 &middot; Smooth &middot; hover to unzip</small><h3>Attention Drifts</h3></div></article></div><div class="g"></div><div class="c R sc"><article class="zc st" style="--im:url(assets/t10.jpg)"><div class="zb"><div class="rv"><p>A catch feels different when there is time to spare. At a table, an interrupted zipper may be a minor problem. At a doorway, while another person waits, the same resistance can feel disproportionately urgent. Hurry changes the meaning of a few seconds.</p></div></div><div class="pn l"></div><div class="pn r"></div><div class="zs"></div><div class="zt"><small>Story 04 &middot; Stuck &middot; hover to unzip</small><h3>The Wrong Moment</h3></div></article><article class="zc st" style="--im:url(assets/t17.jpg)"><div class="zb"><div class="rv"><p>There is a moment when the hand stops trying. The object remains where it is, and no new movement is made. This pause can feel unproductive because the visible state has not improved. Yet it changes the task by making room for attention that was difficult to sustain during repeated pulling.</p></div></div><div class="pn l"></div><div class="pn r"></div><div class="zs"></div><div class="zt"><small>Story 05 &middot; Stuck &middot; hover to unzip</small><h3>Waiting</h3></div></article><article class="zc st" style="--im:url(assets/t13.jpg)"><div class="zb"><div class="rv"><p><b>Catch</b> names the first interruption.</p><p><b>Again</b> names the immediate temptation to repeat.</p><p><b>Look</b> changes the task. Movement pauses while the object is brought into view.</p><p><b>Adjust</b> suggests a limited intervention.</p><p><b>Wait</b> makes room between attempts.</p><p><b>Enough</b> names a decision that can arrive before success.</p></div></div><div class="pn l"></div><div class="pn r"></div><div class="zs"></div><div class="zt"><small>Story 06 &middot; Stuck &middot; hover to unzip</small><h3>Six Words</h3></div></article><article class="zc st" style="--im:url(assets/st_brass.jpg)"><div class="zb"><div class="rv"><p>Look changes the task. Movement pauses while the object is brought into view. The eyes try to distinguish a reason from a symptom, an unusual detail from an ordinary one. The fastening becomes something to examine.</p></div></div><div class="pn l"></div><div class="pn r"></div><div class="zs"></div><div class="zt"><small>Story 07 &middot; Stuck &middot; hover to unzip</small><h3>Look</h3></div></article></div></div><div class="row"><div class="c L"><div class="col ls"><div class="kk rv">Story 01 &middot; Smooth</div><h2 class="rv">The Other Hand</h2><div class="tx rv"><p>The hand also approaches with a direction already in mind. Finding the tab and preparing to move it can become one continuous gesture. The fingers close as the wrist turns into position. For a moment, the hand and the small part it holds establish the terms of the action: where movement will begin, which way it will travel, and how the body will follow.</p><p>The hand holding the pull receives most of the attention because it travels. Yet another part of the body may be doing quieter work. The other hand holds the bag, steadies the case, or keeps an edge from following the slider. A moving hand depends on something that remains sufficiently still.</p><p>Without that support, the first pull might simply shift the whole object. The gesture then contains a small correction: settle it, hold it, try the movement again. When support is established immediately, the correction disappears from notice.</p><p>Watching both hands makes the action less simple and more interesting. One hand directs a small mechanism while the other manages the conditions around it. Their coordination can be quiet enough to escape description.</p></div></div></div><div class="g"></div><div class="c R"><div class="col ls"><div class="kk rv">Story 01 &middot; Stuck</div><h2 class="rv">The Wrong Moment</h2><div class="tx rv"><p>A catch feels different when there is time to spare. At a table, an interrupted zipper may be a minor problem. At a doorway, while another person waits, the same resistance can feel disproportionately urgent. The mechanism occupies a small space, but the delay belongs to the larger situation around it.</p><p>Hurry changes the meaning of a few seconds. An action expected to be nearly immediate becomes an obstacle between one task and another. Attention is pulled toward the next thing even as the hand is required to stay with the present one.</p><p>That division can make inspection feel like another inconvenience. Stopping to look appears to delay progress, although repeated pulling may not be producing progress either.</p><p>The zipper has not become more complicated simply because someone is late. The conditions of the encounter have changed. Time, light, available space, and the ability to use both hands all influence how manageable the interruption feels.</p></div></div></div></div><div class="row"><div class="c L"><div class="col ls"><div class="kk rv">Story 02 &middot; Smooth</div><h2 class="rv">Sound Along the Line</h2><div class="tx rv"><p>The sound of a zipper gives movement another form. A brief run of small noises can accompany the slider as it travels, gathering into something heard as a single event. In a quiet room, it may be unusually noticeable. Among other sounds, it may barely register.</p><p>Different objects produce different listening experiences. Material, construction, speed, and the surrounding surface can all affect what reaches the ear. What matters here is the relationship between the noise and the hand’s progress: the sound continues while the movement continues, and falls away when it ends.</p><p>That relationship can make the action feel readable even when the eyes are occupied elsewhere. The ear receives evidence that something is happening.</p><p>Trying to write the sound exposes the difficulty of translating an ordinary sensation. A repeated letter suggests duration but misses texture. A word such as rasp or buzz offers an approximation rather than a recording.</p></div></div></div><div class="g"></div><div class="c R"><div class="col ls"><div class="kk rv">Story 02 &middot; Stuck</div><h2 class="rv">Waiting</h2><div class="tx rv"><p>There is a moment when the hand stops trying. The object remains where it is, and no new movement is made. This pause can feel unproductive because the visible state has not improved. Yet it changes the task by making room for attention that was difficult to sustain during repeated pulling.</p><p>Waiting allows the person to reconsider what they know. The slider stopped here. That attempt changed the surrounding material. A different grip made little difference. These observations can be gathered into an account, however tentative.</p><p>The pause can also reveal a limit in the situation. Perhaps the light is poor, the object is awkward to hold, or there is no time for further inspection. Setting the object aside, changing the task, or seeking help can become reasonable responses to the circumstances.</p><p>None of these choices provides the satisfaction of an effortless finish. For a moment, the task is no longer measured by how far the slider travels, but by whether the next decision is better informed than the last.</p></div></div></div></div><div class="row"><div class="c L"><div class="col ls"><div class="kk rv">Story 03 &middot; Smooth</div><h2 class="rv">Knowing the Pace</h2><div class="tx rv"><p>A familiar movement has an expected duration, even when no one is counting. We anticipate that the zipper will take a brief interval to reach the end. The hand moves within that expectation. Completion feels near enough that we may already be shifting our weight, looking away, or preparing to pick up the object.</p><p>The pace is not necessarily constant. A person may begin cautiously, move more quickly through an easy section, and slow near the end. These changes can still feel smooth because they belong to the intended action.</p><p>Hurry can compress the interval without improving it. A faster pull may feel appropriate when the object moves easily, but speed alone does not define success. Smoothness concerns the fit between intention and response, including the ability to choose a pace that the object accommodates.</p><p>Describing the gesture makes the short interval seem longer than it felt. A few seconds can hold a sequence of decisions, sensations, and small changes in position.</p></div></div></div><div class="g"></div><div class="c R"><div class="col ls"><div class="kk rv">Story 03 &middot; Stuck</div><h2 class="rv">Back a Little</h2><div class="tx rv"><p>An attempt does not always continue in the original direction. The person may move the slider back a short distance, when it moves freely enough to allow that, before reconsidering the next step. The gesture briefly gives up visible progress. Its purpose becomes understanding or changing the conditions around the catch.</p><p>This retreat can feel counterintuitive when the task is to finish quickly. Distance already travelled seems like something to preserve. Yet insisting on forward movement can keep the hand repeating an unhelpful action.</p><p>Even a small backward movement changes the rhythm. Pull, stop, return, inspect. The sequence now has more stages than the user originally anticipated. Each stage can supply a little information, although none guarantees that the next attempt will work.</p><p>The value of this moment lies in its modesty. The person does not need to solve the whole problem in one gesture. The action has become provisional.</p></div></div></div></div></section>
+<section id="colophon"><div class="row"><div class="c L"><div class="col"><h2>Colophon</h2><h3>Smooth / Stuck</h3><p>A publication in two parts.</p><h3>Concept, photography, editorial direction, and graphic design</h3><p>Charlie Deng</p></div></div><div class="g"></div><div class="c R"><div class="col"><h2>About</h2><h3>Typefaces</h3><p>Nippo for titles and headings, Roundo for body text. This draft uses Chakra Petch and Montserrat as stand-ins.</p><h3>Created for</h3><p>Parsons School of Design, The New School. New York, 2026.</p></div></div></div></section>
+<footer><span>Smooth/Stuck</span><span>Desktop edition</span></footer>
+<script>
+var imgS = new Image();
+var imgL = new Image();
+var loadedN = 0;
+function gotImg() { loadedN = loadedN + 1; }
+imgS.onload = gotImg;
+imgL.onload = gotImg;
+imgS.src = 'assets/strip.jpg';
+imgL.src = 'assets/slider.png';
+
+function sm(t) {
+  return t * t * (3 - 2 * t);
+}
+function clamp(v, a, b) {
+  return Math.max(a, Math.min(b, v));
+}
+
+var sp = document.getElementById('sp');
+var sx = sp.getContext('2d');
+var spW = 96, spH = 0, dprS = 1;
+var spP = 0, spDrag = false, spGrab = 0, spHeld = -1, spPull = 0, spRev = 0, spDir = 0, spLastY = 0, spPx = 0;
+var spFreed = [false, false];
+var spStuck = [0, 0];
+
+function maxScroll() {
+  return document.documentElement.scrollHeight - window.innerHeight;
+}
+
+function sizeSpine() {
+  dprS = Math.min(window.devicePixelRatio || 1, 2);
+  spH = window.innerHeight - 64;
+  sp.style.height = spH + 'px';
+  sp.style.width = spW + 'px';
+  sp.width = Math.round(spW * dprS);
+  sp.height = Math.round(spH * dprS);
+  var a = document.getElementById('r2');
+  var b = document.getElementById('r3');
+  spStuck[0] = a.offsetTop - 64;
+  spStuck[1] = b.offsetTop - 64;
+}
+
+function spS(p) {
+  return 20 + p * (spH - 130);
+}
+
+function drawSpine(now) {
+  if (loadedN < 2) return;
+  var y;
+  sx.setTransform(dprS, 0, 0, dprS, 0, 0);
+  sx.fillStyle = '#6b6963';
+  sx.fillRect(0, 0, spW, spH);
+  var s = spS(spP);
+  var shake = 0;
+  if (spHeld >= 0) shake = Math.sin(now * 0.06) * 2;
+  for (y = 0; y < spH; y = y + 2) {
+    var d = sm(clamp((s - y) / 260, 0, 1)) * 7;
+    var mis = 0;
+    if (spHeld >= 0 && y > s && y < s + 90) mis = 1 - (y - s) / 90;
+    var sy = (y + 20) * Math.min(1, 975 / (spH + 22));
+    sx.fillStyle = '#141414';
+    sx.fillRect(48 - d - 1, y, 2 * d + 2, 2.4);
+    sx.drawImage(imgS, 0, sy, 40, 2, 8 - d + mis * 2, y, 40, 2.4);
+    sx.drawImage(imgS, 40, sy + Math.round(mis * 8), 42, 2, 48 + d - mis * 2, y, 42, 2.4);
+  }
+  sx.drawImage(imgL, 20 + shake, s - 15, 56, 118.5);
+}
+
+function spPointer(e) {
+  var r = sp.getBoundingClientRect();
+  return {x: e.clientX - r.left, y: e.clientY - r.top};
+}
+
+sp.addEventListener('pointerdown', function (e) {
+  var p = spPointer(e);
+  var s = spS(spP);
+  if (p.x > 12 && p.x < 84 && p.y > s - 22 && p.y < s + 112) {
+    spDrag = true;
+    spGrab = p.y - s;
+    spPull = 0;
+    spRev = 0;
+    spDir = 0;
+    spLastY = p.y;
+    spPx = window.pageYOffset;
+    document.documentElement.style.scrollBehavior = 'auto';
+    sp.setPointerCapture(e.pointerId);
+    sp.style.cursor = 'grabbing';
+    e.preventDefault();
+  }
+});
+
+sp.addEventListener('pointermove', function (e) {
+  var p = spPointer(e);
+  if (!spDrag) {
+    var s0 = spS(spP);
+    if (p.x > 12 && p.x < 84 && p.y > s0 - 22 && p.y < s0 + 112) sp.style.cursor = 'grab';
+    else sp.style.cursor = 'default';
+    return;
+  }
+  var mx = maxScroll();
+  var praw = clamp((p.y - spGrab - 20) / (spH - 130), 0, 1);
+  var target = praw * mx;
+  var dy = p.y - spLastY;
+  if (Math.abs(dy) > 3) {
+    var nd = dy > 0 ? 1 : -1;
+    if (spDir != 0 && nd != spDir && spHeld >= 0) spRev = spRev + 1;
+    spDir = nd;
+    spLastY = p.y;
+  }
+  var px = target;
+  if (spHeld >= 0) {
+    var bpx = spStuck[spHeld];
+    if (target < bpx - 60) {
+      spHeld = -1;
+      spPull = 0;
+    } else {
+      spPull = Math.max(spPull, (target - bpx) / mx * (spH - 130));
+      if (spPull > 110 || spRev >= 4) {
+        spFreed[spHeld] = true;
+        spHeld = -1;
+      } else {
+        px = bpx;
+      }
+    }
+  } else {
+    var i;
+    for (i = 0; i < 2; i++) {
+      if (!spFreed[i] && spPx < spStuck[i] && target >= spStuck[i]) {
+        spHeld = i;
+        spPull = 0;
+        spRev = 0;
+        px = spStuck[i];
+        break;
+      }
+    }
+  }
+  spPx = px;
+  window.scrollTo(0, px);
+  document.body.className = spHeld >= 0 ? 'held' : '';
+});
+
+function spEnd() {
+  if (!spDrag) return;
+  spDrag = false;
+  spHeld = -1;
+  document.body.className = '';
+  document.documentElement.style.scrollBehavior = '';
+  sp.style.cursor = 'default';
+}
+sp.addEventListener('pointerup', spEnd);
+sp.addEventListener('pointercancel', spEnd);
+
+var mc = document.getElementById('mc');
+var mx2 = mc.getContext('2d');
+var mechEl = document.getElementById('mech');
+var rp = document.getElementById('rp');
+var rw = document.getElementById('rw');
+var cap = document.getElementById('cap');
+var words = document.getElementsByClassName('w');
+var mW = 0, mH = 0, dprM = 1;
+var mT = 0, mDrag = false, mGrab = 0, mHold = -1, mPull = 0, mRev = 0, mDir = 0, mLastY = 0, mLastMove = 0;
+var mBacked = false, mDropped = false, mLook = false, mAdjTime = -99999, mPtr = {x: -999, y: -999};
+var mFreed = [false, false, false, false, false];
+var wornT = [0.22, 0.4, 0.55, 0.7, 0.86];
+var auto = null;
+var F = {};
+var lastKey = '';
+
+function blockers() {
+  var n = Math.round(rw.value / 100 * 5);
+  return wornT.slice(0, n);
+}
+
+function sizeMech() {
+  dprM = Math.min(window.devicePixelRatio || 1, 2);
+  mW = mc.clientWidth;
+  mH = mc.clientHeight;
+  mc.width = Math.round(mW * dprM);
+  mc.height = Math.round(mH * dprM);
+}
+
+function geom() {
+  var N = +rp.value;
+  var sc = (mH - 48) / (N * 24.8);
+  var sTop = 44;
+  var sBot = mH - 24 - 190 * sc;
+  return {sc: sc, sTop: sTop, sBot: sBot, trav: sBot - sTop};
+}
+
+function sOf(t, g) {
+  return g.sBot - t * g.trav;
+}
+
+function jamNow() {
+  if (auto) return auto.jam > 0;
+  return mHold >= 0;
+}
+
+function drawMech(now) {
+  if (loadedN < 2 || mW < 10) return;
+  var g = geom();
+  var sc = g.sc;
+  var s = sOf(mT, g);
+  var cx = mW / 2;
+  var LW = 40 * sc, RW = 42 * sc;
+  var maxD = Math.min(mW * 0.22, 150);
+  var jam = jamNow();
+  var bl = blockers();
+  var y, i;
+  mx2.setTransform(dprM, 0, 0, dprM, 0, 0);
+  mx2.fillStyle = '#e4dfd0';
+  mx2.fillRect(0, 0, mW, mH);
+
+  function dOf(yy) {
+    return sm(clamp((s - yy) / (mH * 0.5), 0, 1)) * maxD;
+  }
+
+  mx2.fillStyle = '#0b0b0b';
+  mx2.beginPath();
+  mx2.moveTo(0, 0);
+  for (y = 0; y <= mH; y = y + 6) mx2.lineTo(cx - LW - dOf(y) + sc, y);
+  mx2.lineTo(cx - LW - dOf(mH) + sc, mH);
+  mx2.lineTo(0, mH);
+  mx2.closePath();
+  mx2.fill();
+  mx2.fillStyle = '#a29f9a';
+  mx2.beginPath();
+  mx2.moveTo(mW, 0);
+  for (y = 0; y <= mH; y = y + 6) mx2.lineTo(cx + dOf(y) + RW - sc, y);
+  mx2.lineTo(cx + dOf(mH) + RW - sc, mH);
+  mx2.lineTo(mW, mH);
+  mx2.closePath();
+  mx2.fill();
+
+  for (y = 0; y < mH; y = y + 2) {
+    var d = dOf(y);
+    var mis = 0;
+    if (jam && y > s && y < s + 90 * sc) mis = 1 - (y - s) / (90 * sc);
+    var dxL = 0, dxR = 0;
+    for (i = 0; i < bl.length; i++) {
+      var yb = sOf(bl[i], g);
+      var k = 1 - Math.abs(y - yb - 20 * sc) / (22 * sc);
+      if (k > 0) {
+        dxL = dxL + k * (rw.value / 100) * 0.22 * LW;
+        dxR = dxR - k * (rw.value / 100) * 0.1 * RW;
+      }
+    }
+    var srcY = (y / sc + 20) % 985;
+    var srcY2 = Math.min(985, srcY + Math.round(mis * 10));
+    mx2.drawImage(imgS, 0, srcY, 40, 2, cx - LW - d + dxL + mis * 3, y, LW, 2 * sc + 0.5);
+    mx2.drawImage(imgS, 40, srcY2, 42, 2, cx + d + dxR - mis * 3, y, RW, 2 * sc + 0.5);
+  }
+
+  var shake = jam ? Math.sin(now * 0.06) * 2.5 : 0;
+  var sw = 112 * sc, sh = 237 * sc;
+  mx2.drawImage(imgL, cx - sw / 2 + shake, s - 30 * sc, sw, sh);
+}
+
+function tabHit(px, py) {
+  var g = geom();
+  var s = sOf(mT, g);
+  var sc = g.sc;
+  return px > mW / 2 - 70 * sc && px < mW / 2 + 70 * sc && py > s - 36 * sc && py < s + 215 * sc;
+}
+
+function mPointer(e) {
+  var r = mc.getBoundingClientRect();
+  return {x: e.clientX - r.left, y: e.clientY - r.top};
+}
+
+mc.addEventListener('pointerdown', function (e) {
+  var p = mPointer(e);
+  if (!tabHit(p.x, p.y)) return;
+  var g = geom();
+  mDrag = true;
+  auto = null;
+  mDropped = false;
+  mGrab = p.y - sOf(mT, g);
+  mLastY = p.y;
+  mDir = 0;
+  mRev = 0;
+  mPull = 0;
+  mBacked = false;
+  mLastMove = performance.now();
+  mc.setPointerCapture(e.pointerId);
+  mc.style.cursor = 'grabbing';
+  e.preventDefault();
+});
+
+mc.addEventListener('pointermove', function (e) {
+  var p = mPointer(e);
+  mPtr = p;
+  var g = geom();
+  if (!mDrag) {
+    mc.style.cursor = tabHit(p.x, p.y) ? 'grab' : 'default';
+    return;
+  }
+  mLastMove = performance.now();
+  var tr = clamp((g.sBot - (p.y - mGrab)) / g.trav, 0, 1);
+  var dy = p.y - mLastY;
+  if (Math.abs(dy) > 3) {
+    var nd = dy > 0 ? 1 : -1;
+    if (mDir != 0 && nd != mDir && mHold >= 0) mRev = mRev + 1;
+    mDir = nd;
+    mLastY = p.y;
+  }
+  var bl = blockers();
+  var i;
+  if (mHold >= 0 && mHold < bl.length) {
+    var b = bl[mHold];
+    if (tr < b - 0.045) {
+      mHold = -1;
+      mPull = 0;
+      mBacked = true;
+      mT = tr;
+    } else {
+      mPull = Math.max(mPull, (tr - b) * g.trav);
+      if (mPull > 110 || mRev >= 4) {
+        mFreed[mHold] = true;
+        mHold = -1;
+        mBacked = false;
+        mT = tr;
+      } else {
+        mT = b - 0.002;
+      }
+    }
+  } else {
+    var hit = -1;
+    if (tr > mT) {
+      for (i = 0; i < bl.length; i++) {
+        if (!mFreed[i] && mT < bl[i] && tr >= bl[i]) {
+          hit = i;
+          break;
+        }
+      }
+    }
+    if (hit >= 0) {
+      mHold = hit;
+      mT = bl[hit] - 0.002;
+      mPull = 0;
+      mRev = 0;
+      mBacked = false;
+    } else {
+      mT = tr;
+    }
+  }
+  for (i = 0; i < bl.length; i++) {
+    if (mT < bl[i] - 0.15) mFreed[i] = false;
+  }
+});
+
+function mEnd() {
+  if (!mDrag) return;
+  mDrag = false;
+  mc.style.cursor = 'default';
+  if (mHold >= 0) mDropped = true;
+}
+mc.addEventListener('pointerup', mEnd);
+mc.addEventListener('pointercancel', mEnd);
+mc.addEventListener('pointerleave', function () {
+  mPtr = {x: -999, y: -999};
+});
+
+function resetWear() {
+  mFreed = [false, false, false, false, false];
+  var bl = blockers();
+  if (mHold >= bl.length) mHold = -1;
+  if (mHold >= 0) mAdjTime = performance.now();
+}
+rw.addEventListener('input', function () {
+  document.getElementById('wn').innerHTML = rw.value;
+  resetWear();
+});
+rp.addEventListener('input', function () {
+  document.getElementById('tn').innerHTML = rp.value;
+  if (mHold >= 0) mAdjTime = performance.now();
+});
+
+function startAuto(kind) {
+  var segs = [];
+  var cur = mT;
+  var i;
+  if (kind == 'smooth') {
+    segs.push({to: 1, dur: Math.max(0.9, (1 - cur) * 3.4), jam: 0, fl: ''});
+  } else {
+    if (rw.value < 45) {
+      rw.value = 60;
+      document.getElementById('wn').innerHTML = 60;
+    }
+    mFreed = [false, false, false, false, false];
+    mHold = -1;
+    cur = 0;
+    mT = 0;
+    var bl = blockers();
+    for (i = 0; i < bl.length; i++) {
+      var b = bl[i];
+      segs.push({to: b - 0.004, dur: (b - cur) * 3 + 0.3, jam: 0, fl: ''});
+      segs.push({to: b - 0.004, dur: 1.1, jam: 1, fl: 'again'});
+      segs.push({to: b - 0.05, dur: 0.55, jam: 0, fl: 'adjust'});
+      segs.push({to: b - 0.05, dur: 0.9, jam: 0, fl: 'wait'});
+      segs.push({to: b + 0.02, dur: 0.35, jam: 0, fl: ''});
+      cur = b + 0.02;
+    }
+    segs.push({to: 1, dur: (1 - cur) * 2.6 + 0.3, jam: 0, fl: ''});
+  }
+  auto = {segs: segs, i: 0, from: mT, start: performance.now(), jam: 0, fl: ''};
+}
+document.getElementById('bs').addEventListener('click', function () {
+  startAuto('smooth');
+});
+document.getElementById('bt').addEventListener('click', function () {
+  startAuto('stuck');
+});
+
+function stepAuto(now) {
+  if (!auto) return;
+  var seg = auto.segs[auto.i];
+  var p = (now - auto.start) / (seg.dur * 1000);
+  mT = auto.from + (seg.to - auto.from) * sm(clamp(p, 0, 1));
+  auto.jam = seg.jam;
+  auto.fl = seg.fl;
+  if (p >= 1) {
+    auto.i = auto.i + 1;
+    auto.from = seg.to;
+    auto.start = now;
+    if (auto.i >= auto.segs.length) {
+      mT = auto.from;
+      auto = null;
+    }
+  }
+}
+
+var CAPS = {
+  idle: 'Take hold of the tab and pull it up.',
+  grip: 'Grip. The fingers settle on the tab.',
+  pull: 'Pull. The slider follows, and the teeth merge and interlock behind it.',
+  close: 'Close. At the end, the hand has already gone elsewhere.',
+  catch: 'Catch. The slider has met a tooth out of true.',
+  again: 'Again. Pulling harder changes nothing yet.',
+  look: 'Look. One tooth sits slightly off its row.',
+  adjust: 'Adjust. A small step back, and a new angle.',
+  wait: 'Wait. The pause makes room for attention.',
+  enough: 'Enough. Let go.'
+};
+
+function flags(now) {
+  var f = {grip: false, pull: false, close: false, catch: false, again: false, look: false, adjust: false, wait: false, enough: false};
+  var key = 'idle';
+  if (auto) {
+    f.catch = auto.jam > 0;
+    f.again = auto.fl == 'again';
+    f.adjust = auto.fl == 'adjust';
+    f.wait = auto.fl == 'wait';
+    f.look = f.wait;
+    f.pull = !f.catch && !f.adjust && !f.wait;
+  } else {
+    f.grip = mDrag;
+    f.catch = mHold >= 0;
+    f.again = f.catch && mDrag && mRev >= 2;
+    f.wait = f.catch && mDrag && now - mLastMove > 1300;
+    f.adjust = (mDrag && mBacked) || now - mAdjTime < 2500;
+    f.enough = f.catch && !mDrag && mDropped;
+    var g = geom();
+    var s = sOf(mT, g);
+    f.look = f.catch && !mDrag && mPtr.x > mW / 2 - 130 * g.sc && mPtr.x < mW / 2 + 130 * g.sc && mPtr.y > s - 70 * g.sc && mPtr.y < s + 140 * g.sc;
+    f.pull = mDrag && !f.catch && !f.adjust;
+  }
+  f.close = mT > 0.985;
+  var order = ['enough', 'wait', 'look', 'adjust', 'again', 'catch', 'close', 'pull', 'grip'];
+  var i;
+  for (i = 0; i < order.length; i++) {
+    if (f[order[i]]) {
+      key = order[i];
+      break;
+    }
+  }
+  F = f;
+  return key;
+}
+
+function updateWords(now) {
+  var key = flags(now);
+  var sig = key;
+  var i;
+  for (i = 0; i < words.length; i++) {
+    var on = F[words[i].getAttribute('data-w')];
+    sig = sig + (on ? '1' : '0');
+  }
+  if (sig == lastKey) return;
+  lastKey = sig;
+  for (i = 0; i < words.length; i++) {
+    words[i].className = F[words[i].getAttribute('data-w')] ? 'w on' : 'w';
+  }
+  cap.innerHTML = CAPS[key];
+}
+
+var secs = ['top', 'read', 'mech', 'stories', 'colophon'];
+var links = document.getElementById('mast').getElementsByTagName('nav')[0].getElementsByTagName('a');
+
+function updatePage() {
+  var vh = window.innerHeight;
+  var cur = 'top';
+  var i;
+  for (i = 0; i < secs.length; i++) {
+    var el = document.getElementById(secs[i]);
+    if (el.getBoundingClientRect().top < vh * 0.4) cur = secs[i];
+  }
+  for (i = 0; i < links.length; i++) {
+    links[i].className = links[i].getAttribute('data-s') == cur ? 'on' : '';
+  }
+  var rv = document.getElementsByClassName('rv');
+  for (i = 0; i < rv.length; i++) {
+    if (rv[i].getBoundingClientRect().top < vh * 0.9 && rv[i].className.indexOf(' in') == -1) {
+      rv[i].className = rv[i].className + ' in';
+    }
+  }
+  for (i = 0; i < 2; i++) {
+    if (window.pageYOffset < spStuck[i] - 300) spFreed[i] = false;
+  }
+}
+
+function lens(box) {
+  var img = box.getElementsByTagName('img')[0];
+  var lc = document.createElement('div');
+  lc.className = 'lc';
+  box.appendChild(lc);
+  box.onmousemove = function (ev) {
+    var r = box.getBoundingClientRect();
+    var mx = ev.clientX - r.left;
+    var my = ev.clientY - r.top;
+    lc.style.display = 'block';
+    lc.style.left = (mx - 65) + 'px';
+    lc.style.top = (my - 65) + 'px';
+    lc.style.backgroundImage = 'url(' + img.src + ')';
+    lc.style.backgroundSize = (r.width * 3) + 'px ' + (r.height * 3) + 'px';
+    lc.style.backgroundPosition = (65 - mx * 3) + 'px ' + (65 - my * 3) + 'px';
+  };
+  box.onmouseleave = function () {
+    lc.style.display = 'none';
+  };
+}
+var lws = document.getElementsByClassName('lw');
+var k;
+for (k = 0; k < lws.length; k++) lens(lws[k]);
+
+function frame(now) {
+  var mxs = maxScroll();
+  if (!spDrag) {
+    var tp = mxs > 0 ? window.pageYOffset / mxs : 0;
+    spP = spP + (tp - spP) * 0.3;
+  } else {
+    spP = mxs > 0 ? window.pageYOffset / mxs : 0;
+  }
+  drawSpine(now);
+  var r = mechEl.getBoundingClientRect();
+  if (r.bottom > 0 && r.top < window.innerHeight) {
+    stepAuto(now);
+    drawMech(now);
+    updateWords(now);
+  }
+  requestAnimationFrame(frame);
+}
+
+window.addEventListener('scroll', updatePage);
+window.addEventListener('resize', function () {
+  sizeSpine();
+  sizeMech();
+  updatePage();
+});
+window.addEventListener('load', function () {
+  sizeSpine();
+  sizeMech();
+  updatePage();
+});
+sizeSpine();
+sizeMech();
+updatePage();
+requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>
